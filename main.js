@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 const mainContainer = document.getElementById('main3d');
+const metricsEl = document.getElementById('metrics');
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setSize(mainContainer.clientWidth, mainContainer.clientHeight);
@@ -56,6 +57,8 @@ const pointer = new THREE.Vector2();
 const dragPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -sphere.position.y);
 const dragHit = new THREE.Vector3();
 let draggingSphere = false;
+let dirty = true;
+let lastMetrics = null;
 
 renderer.domElement.addEventListener('pointerdown', (ev) => {
   const rect = renderer.domElement.getBoundingClientRect();
@@ -83,6 +86,7 @@ window.addEventListener('pointermove', (ev) => {
   if (raycaster.ray.intersectPlane(dragPlane, dragHit)) {
     sphere.position.x = THREE.MathUtils.clamp(dragHit.x, -8, 8);
     sphere.position.z = THREE.MathUtils.clamp(dragHit.z, -8, 8);
+    dirty = true;
   }
 });
 
@@ -136,6 +140,14 @@ function drawProjection(canvas, points, axisA, axisB, worldMin = -8, worldMax = 
   }
 }
 
+function sphereIntersectsAabb() {
+  const half = cubeSize * 0.5;
+  const dx = Math.max(Math.abs(sphere.position.x - cube.position.x) - half, 0);
+  const dy = Math.max(Math.abs(sphere.position.y - cube.position.y) - half, 0);
+  const dz = Math.max(Math.abs(sphere.position.z - cube.position.z) - half, 0);
+  return (dx * dx + dy * dy + dz * dz) <= sphereRadius * sphereRadius;
+}
+
 function sampleIntersectionPoints(samplesPerAxis = 15) {
   const bMin = cube.position.clone().addScalar(-cubeSize / 2);
   const bMax = cube.position.clone().addScalar(cubeSize / 2);
@@ -169,11 +181,40 @@ function sampleIntersectionPoints(samplesPerAxis = 15) {
       }
     }
   }
+
   return points;
+}
+
+function computeMetrics(points) {
+  if (points.length === 0) {
+    return {
+      volumeApprox: 0,
+      min: new THREE.Vector3(0, 0, 0),
+      max: new THREE.Vector3(0, 0, 0),
+      size: new THREE.Vector3(0, 0, 0)
+    };
+  }
+
+  const min = new THREE.Vector3(Infinity, Infinity, Infinity);
+  const max = new THREE.Vector3(-Infinity, -Infinity, -Infinity);
+  for (const p of points) {
+    min.min(new THREE.Vector3(p.x, p.y, p.z));
+    max.max(new THREE.Vector3(p.x, p.y, p.z));
+  }
+
+  const sampleStep = cubeSize / 13;
+  const volumeApprox = points.length * sampleStep * sampleStep * sampleStep;
+  return {
+    volumeApprox,
+    min,
+    max,
+    size: max.clone().sub(min)
+  };
 }
 
 function updateCubeMovement(delta) {
   const speed = 4.2;
+  const prev = cube.position.clone();
   if (keyState.has('KeyW')) cube.position.z -= speed * delta;
   if (keyState.has('KeyS')) cube.position.z += speed * delta;
   if (keyState.has('KeyA')) cube.position.x -= speed * delta;
@@ -184,6 +225,22 @@ function updateCubeMovement(delta) {
   cube.position.x = THREE.MathUtils.clamp(cube.position.x, -8, 8);
   cube.position.y = THREE.MathUtils.clamp(cube.position.y, 0.5, 8);
   cube.position.z = THREE.MathUtils.clamp(cube.position.z, -8, 8);
+
+  if (!prev.equals(cube.position)) dirty = true;
+}
+
+function updateMetricsOverlay(metrics, overlapActive) {
+  if (!metricsEl) return;
+  if (!overlapActive) {
+    metricsEl.innerHTML = 'Intersección: <strong>no</strong>';
+    return;
+  }
+
+  metricsEl.innerHTML = [
+    'Intersección: <strong>sí</strong>',
+    `Volumen aprox.: <strong>${metrics.volumeApprox.toFixed(3)}</strong>`,
+    `Δx=${metrics.size.x.toFixed(3)} · Δy=${metrics.size.y.toFixed(3)} · Δz=${metrics.size.z.toFixed(3)}`
+  ].join('<br />');
 }
 
 function syncOverlay(points) {
@@ -201,6 +258,24 @@ function syncOverlay(points) {
   overlapPoints.geometry.computeBoundingSphere();
 }
 
+function recomputeIfNeeded() {
+  if (!dirty) return;
+
+  if (!sphereIntersectsAabb()) {
+    syncOverlay([]);
+    lastMetrics = null;
+    updateMetricsOverlay(null, false);
+    dirty = false;
+    return;
+  }
+
+  const points = sampleIntersectionPoints(13);
+  syncOverlay(points);
+  lastMetrics = computeMetrics(points);
+  updateMetricsOverlay(lastMetrics, points.length > 0);
+  dirty = false;
+}
+
 function onResize() {
   renderer.setSize(mainContainer.clientWidth, mainContainer.clientHeight);
   camera.aspect = mainContainer.clientWidth / mainContainer.clientHeight;
@@ -208,6 +283,7 @@ function onResize() {
   resizePanelCanvas(panels.xy);
   resizePanelCanvas(panels.xz);
   resizePanelCanvas(panels.yz);
+  dirty = true;
 }
 
 window.addEventListener('resize', onResize);
@@ -217,8 +293,7 @@ const clock = new THREE.Clock();
 function animate() {
   const dt = clock.getDelta();
   updateCubeMovement(dt);
-  const points = sampleIntersectionPoints(13);
-  syncOverlay(points);
+  recomputeIfNeeded();
 
   controls.update();
   renderer.render(scene, camera);
