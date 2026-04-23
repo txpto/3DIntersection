@@ -24,9 +24,10 @@ Implementar una arquitectura web robusta para intersección 3D con separación e
 - Ejecución en Web Worker con deduplicación por `requestId`.
 - Fallback inline para entornos sin Worker.
 
-## Fase 4 — Calidad métrica y validación (iniciada)
+## Fase 4 — Calidad métrica y validación (en ejecución)
 - Shared core geométrico (`intersection-core`) reutilizado entre worker e inline.
-- Próximo paso: pruebas de regresión geométrica y error bounds por resolución.
+- Tests automáticos (`node:test`) para regresión geométrica base.
+- Script de validación de drift por resolución para cuantificar estabilidad del muestreo.
 
 ## Fase 5 — Optimización avanzada y backend robusto (pendiente)
 - Sustituir backend de muestreo por CSG robusto en WASM (objetivo: Manifold).
@@ -36,5 +37,5 @@ Implementar una arquitectura web robusta para intersección 3D con separación e
 - F1: completada.
 - F2: en ejecución.
 - F3: en ejecución.
-- F4: iniciada.
+- F4: en ejecución.
 - F5: pendiente.

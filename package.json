@@ -1,0 +1,9 @@
+{
+  "name": "3d-intersection",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "validate:sampling": "node scripts/phase4-validation.mjs"
+  }
+}
