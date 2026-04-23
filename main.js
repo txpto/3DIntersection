@@ -119,6 +119,24 @@ function getInputPayload() {
   };
 }
 
+const backendFactory = createIntersectionBackend({ preferWorker: true, samplesPerAxis: 20 });
+const backend = backendFactory.backend;
+let backendStatus = backendFactory.mode;
+
+function getInputPayload() {
+  return {
+    sphere: {
+      position: { x: sphere.position.x, y: sphere.position.y, z: sphere.position.z },
+      radius: 1.4
+    },
+    cube: {
+      position: { x: cube.position.x, y: cube.position.y, z: cube.position.z },
+      rotation: { x: cube.quaternion.x, y: cube.quaternion.y, z: cube.quaternion.z, w: cube.quaternion.w },
+      halfSize: { x: 1.5, y: 1.5, z: 1.5 }
+    }
+  };
+}
+
 function resizePanelCanvas(canvas) {
   const dpr = Math.min(devicePixelRatio, 2);
   canvas.width = Math.floor(canvas.clientWidth * dpr);
