@@ -33,6 +33,16 @@ Si tu `python` apunta a Python 2.7 (como en tu caso), `python -m http.server` no
 npx serve -l 8000 .
 ```
 
+### Opción C (Python 2.7 legado)
+
+Si solo tienes Python 2.7 disponible, usa:
+
+```bash
+python -m SimpleHTTPServer 8000
+```
+
+> Nota: funciona para esta demo estática, pero Python 2.7 está obsoleto.
+
 ### Abrir en navegador
 
 - `http://localhost:8000`
@@ -50,4 +60,5 @@ Soluciones rápidas:
 
 1. Probar `py -3 -m http.server 8000`.
 2. O usar `npx serve -l 8000 .`.
-3. O instalar Python 3 y marcar “Add Python to PATH”.
+3. Si solo tienes Python 2.7: `python -m SimpleHTTPServer 8000`.
+4. O instalar Python 3 y marcar “Add Python to PATH”.
