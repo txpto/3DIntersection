@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="_card.css" />
+<title>HUD panel</title>
+</head>
+<body>
+<div class="card">
+  <div style="position:relative;height:200px;background:radial-gradient(circle at 70% 40%, #0a1230 0%, #02030a 70%);border-radius:8px;border:1px solid #1b2240;overflow:hidden">
+    <!-- faux scene glow -->
+    <div style="position:absolute;left:60%;top:30%;width:80px;height:80px;border-radius:50%;background:#2ac0ff;opacity:.7;filter:blur(12px)"></div>
+    <div style="position:absolute;left:72%;top:45%;width:60px;height:60px;background:#f08cff;opacity:.5;filter:blur(10px)"></div>
+    <!-- HUD -->
+    <div style="position:absolute;bottom:10px;left:10px;max-width:440px;font-size:12px;line-height:1.35;background:rgba(0,0,0,.45);border:1px solid #1f2b58;border-radius:8px;padding:10px;color:#d5dcff;font-family:Inter,system-ui,sans-serif;backdrop-filter:blur(2px)">
+      <strong>Controles</strong><br/>
+      Arrastra la <code style="color:#c6d2ff;font-family:var(--font-mono)">esfera</code> con el ratón.<br/>
+      Mueve el <code style="color:#c6d2ff;font-family:var(--font-mono)">cubo</code> con <code style="color:#c6d2ff;font-family:var(--font-mono)">W A S D</code> y <code style="color:#c6d2ff;font-family:var(--font-mono)">Q/E</code>.
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid #25315f;color:#7dff7f">
+        Intersección: <strong>sí</strong><br/>
+        Backend: <strong>worker</strong><br/>
+        Volumen aprox.: <strong>0.4823</strong><br/>
+        Área aprox.: <strong>4.7120</strong><br/>
+        Δx=0.930 · Δy=0.860 · Δz=1.210
+      </div>
+    </div>
+  </div>
+  <div class="rule"></div>
+  <div class="meta">Glass on scene · rgba(0,0,0,.45) · 1px #1f2b58 · bottom-left inset 10px · metrics separated by 1px #25315f</div>
+</div>
+</body>
+</html>

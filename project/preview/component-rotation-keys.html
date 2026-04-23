@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="_card.css" />
+<title>Rotation keys</title>
+</head>
+<body>
+<div class="card">
+  <div class="row" style="gap:28px;align-items:center">
+    <div class="col" style="gap:8px">
+      <div style="display:flex;gap:4px">
+        <kbd style="font-family:var(--font-mono);font-size:12px;color:#c6d2ff;background:#0b0f22;padding:3px 7px;border-radius:5px;border:1px solid #1f2b58;border-bottom-width:2px">I</kbd>
+        <kbd style="font-family:var(--font-mono);font-size:12px;color:#c6d2ff;background:#0b0f22;padding:3px 7px;border-radius:5px;border:1px solid #1f2b58;border-bottom-width:2px">K</kbd>
+        <span style="font-size:11px;color:#9fb0ff;margin-left:6px">pitch · eje X</span>
+      </div>
+      <div style="display:flex;gap:4px">
+        <kbd style="font-family:var(--font-mono);font-size:12px;color:#c6d2ff;background:#0b0f22;padding:3px 7px;border-radius:5px;border:1px solid #1f2b58;border-bottom-width:2px">J</kbd>
+        <kbd style="font-family:var(--font-mono);font-size:12px;color:#c6d2ff;background:#0b0f22;padding:3px 7px;border-radius:5px;border:1px solid #1f2b58;border-bottom-width:2px">L</kbd>
+        <span style="font-size:11px;color:#9fb0ff;margin-left:6px">yaw · eje Y</span>
+      </div>
+      <div style="display:flex;gap:4px">
+        <kbd style="font-family:var(--font-mono);font-size:12px;color:#c6d2ff;background:#0b0f22;padding:3px 7px;border-radius:5px;border:1px solid #1f2b58;border-bottom-width:2px">U</kbd>
+        <kbd style="font-family:var(--font-mono);font-size:12px;color:#c6d2ff;background:#0b0f22;padding:3px 7px;border-radius:5px;border:1px solid #1f2b58;border-bottom-width:2px">O</kbd>
+        <span style="font-size:11px;color:#9fb0ff;margin-left:6px">roll · eje Z</span>
+      </div>
+    </div>
+    <!-- diagram -->
+    <svg width="120" height="110" viewBox="0 0 120 110">
+      <g stroke="#f08cff" stroke-width="1.5" fill="none" transform="translate(30 20) rotate(18 35 35)">
+        <rect x="0" y="0" width="60" height="60"/>
+        <path d="M0 0 L14 -14 L74 -14 L60 0"/>
+        <path d="M74 -14 L74 46 L60 60"/>
+      </g>
+      <g stroke="#9fb0ff" stroke-width="1" fill="none" opacity=".8">
+        <path d="M 60 95 A 18 6 0 1 0 60 85" marker-end="url(#arr)"/>
+      </g>
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M0 0 L10 5 L0 10 z" fill="#9fb0ff"/>
+        </marker>
+      </defs>
+    </svg>
+  </div>
+  <div class="rule"></div>
+  <div class="meta">Six keys = three orthogonal rotations · OBB pose fed to worker as quaternion</div>
+</div>
+</body>
+</html>

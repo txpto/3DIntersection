@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="_card.css" />
+<title>Phase tracker</title>
+</head>
+<body>
+<div class="card">
+  <div style="font-family:var(--font-mono);font-size:11px;color:#9fb0ff;display:flex;gap:8px;flex-wrap:wrap">
+    <span style="display:inline-flex;align-items:center;gap:6px;padding:3px 8px;border:1px solid #263260;border-radius:5px;background:rgba(0,0,0,.35)">
+      <span style="width:6px;height:6px;border-radius:50%;background:#7dff7f"></span>F1 <strong style="color:#d5dcff">done</strong>
+    </span>
+    <span style="display:inline-flex;align-items:center;gap:6px;padding:3px 8px;border:1px solid #263260;border-radius:5px;background:rgba(0,0,0,.35)">
+      <span style="width:6px;height:6px;border-radius:50%;background:#2ac0ff"></span>F2 <strong style="color:#d5dcff">running</strong>
+    </span>
+    <span style="display:inline-flex;align-items:center;gap:6px;padding:3px 8px;border:1px solid #263260;border-radius:5px;background:rgba(0,0,0,.35)">
+      <span style="width:6px;height:6px;border-radius:50%;background:#2ac0ff"></span>F3 <strong style="color:#d5dcff">running</strong>
+    </span>
+    <span style="display:inline-flex;align-items:center;gap:6px;padding:3px 8px;border:1px solid #263260;border-radius:5px;background:rgba(0,0,0,.35)">
+      <span style="width:6px;height:6px;border-radius:50%;background:#2ac0ff"></span>F4 <strong style="color:#d5dcff">running</strong>
+    </span>
+    <span style="display:inline-flex;align-items:center;gap:6px;padding:3px 8px;border:1px solid #263260;border-radius:5px;background:rgba(0,0,0,.35)">
+      <span style="width:6px;height:6px;border-radius:50%;background:#f08cff"></span>F5 <strong style="color:#d5dcff">started</strong>
+    </span>
+  </div>
+  <div style="margin-top:10px;font-family:var(--font-mono);font-size:11px;color:#9fb0ff">
+    Perf: <span style="color:#7dff7f">compute=3.42ms</span> · mode=<span style="color:#d5dcff">worker</span>
+  </div>
+  <div class="rule"></div>
+  <div class="meta">Dots echo status (mint=done, cyan=running, magenta=started) · mono for all runtime telemetry</div>
+</div>
+</body>
+</html>

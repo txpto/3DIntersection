@@ -1,45 +1,25 @@
-# Demo: Intersección 3D (esfera + cubo)
+# CODING AGENTS: READ THIS FIRST
 
-Aplicación web 3D con ejecución por fases activa y arquitectura desacoplada para evolucionar hacia un backend geométrico robusto.
+This is a **handoff bundle** from Claude Design (claude.ai/design).
 
-## Progreso por fases
-- **Fase 1 (completada):** UI 1+3 + interacción completa (ratón/teclado).
-- **Fase 2 (en ejecución):** métricas aproximadas en runtime (volumen/área/extents).
-- **Fase 3 (en ejecución):** backend de intersección en Web Worker + deduplicación de resultados.
-- **Fase 4 (en ejecución):** validación automática del core geométrico (tests + drift).
-- **Fase 5 (iniciada):** tuning runtime (selector backend, samples, telemetría de cómputo).
+A user mocked up designs in HTML/CSS/JS using an AI design tool, then exported this bundle so a coding agent can implement the designs for real.
 
-Plan formal: [`docs/PLAN_FASES_ARQUITECTURA.md`](docs/PLAN_FASES_ARQUITECTURA.md)
+## What you should do — IMPORTANT
 
-## Controles
-- Esfera: arrastre con ratón.
-- Cubo traslación: `W A S D` + `Q/E`.
-- Cubo rotación: `I J K L U O`.
-- Panel runtime: cambiar backend (`worker`/`inline`) y `samples per axis`, luego pulsar **Aplicar**.
+**Read the chat transcripts first.** There are 1 chat transcript(s) in `chats/`. The transcripts show the full back-and-forth between the user and the design assistant — they tell you **what the user actually wants** and **where they landed** after iterating. Don't skip them. The final HTML files are the output, but the chat is where the intent lives.
 
-## Arquitectura implementada
-- `main.js`: render/input, control de fases, configuración runtime y telemetría.
-- `src/boolean-backend.js`: factoría de backend (`worker` o `inline fallback`).
-- `src/intersection-core.js`: núcleo geométrico común.
-- `src/intersection-worker.js`: ejecución asíncrona del cálculo.
-- `tests/intersection-core.test.mjs`: regresión geométrica base.
-- `scripts/phase4-validation.mjs`: validación de estabilidad por resolución.
+**Find the primary design file under `project/` and read it top to bottom.** The chat transcripts will tell you which file the user was last iterating on. Then **follow its imports**: open every file it pulls in (shared components, CSS, scripts) so you understand how the pieces fit together before you start implementing.
 
-## Ejecutar
-```bash
-python3 -m http.server 8000
-```
+**If anything is ambiguous, ask the user to confirm before you start implementing.** It's much cheaper to clarify scope up front than to build the wrong thing.
 
-o
+## About the design files
 
-```bash
-npx serve -l 8000 .
-```
+The design medium is **HTML/CSS/JS** — these are prototypes, not production code. Your job is to **recreate them pixel-perfectly** in whatever technology makes sense for the target codebase (React, Vue, native, whatever fits). Match the visual output; don't copy the prototype's internal structure unless it happens to fit.
 
-Abrir: `http://localhost:8000`
+**Don't render these files in a browser or take screenshots unless the user asks you to.** Everything you need — dimensions, colors, layout rules — is spelled out in the source. Read the HTML and CSS directly; a screenshot won't tell you anything they don't.
 
-## Validación (Fase 4)
-```bash
-npm test
-npm run validate:sampling
-```
+## Bundle contents
+
+- `README.md` — this file
+- `chats/` — conversation transcripts (read these!)
+- `project/` — the `Intersección 3D — Design System` project files (HTML prototypes, assets, components)

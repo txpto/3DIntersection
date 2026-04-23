@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="_card.css" />
+<title>Projection canvas</title>
+</head>
+<body>
+<div class="card">
+  <div style="position:relative;height:180px;background:#050714;border:1px solid #1b2240;border-radius:8px;overflow:hidden">
+    <!-- axes -->
+    <div style="position:absolute;left:0;right:0;top:50%;height:1px;background:#1f2c61"></div>
+    <div style="position:absolute;top:0;bottom:0;left:50%;width:1px;background:#1f2c61"></div>
+    <!-- sampled dots -->
+    <svg width="100%" height="100%" style="position:absolute;inset:0" viewBox="0 0 660 180" preserveAspectRatio="none">
+      <g fill="#70ff73">
+        <!-- cluster -->
+        <circle cx="370" cy="70"  r="1.4"/><circle cx="380" cy="72" r="1.4"/><circle cx="390" cy="74" r="1.4"/>
+        <circle cx="362" cy="78"  r="1.4"/><circle cx="372" cy="80" r="1.4"/><circle cx="382" cy="82" r="1.4"/><circle cx="392" cy="82" r="1.4"/>
+        <circle cx="356" cy="86"  r="1.4"/><circle cx="366" cy="88" r="1.4"/><circle cx="376" cy="90" r="1.4"/><circle cx="386" cy="90" r="1.4"/><circle cx="396" cy="88" r="1.4"/>
+        <circle cx="362" cy="96"  r="1.4"/><circle cx="372" cy="98" r="1.4"/><circle cx="382" cy="100" r="1.4"/><circle cx="392" cy="98" r="1.4"/>
+        <circle cx="370" cy="106" r="1.4"/><circle cx="380" cy="108" r="1.4"/><circle cx="390" cy="106" r="1.4"/>
+      </g>
+    </svg>
+    <span style="position:absolute;top:8px;left:8px;font-size:12px;letter-spacing:.02em;color:#9fb0ff;background:rgba(2,4,10,.7);padding:3px 6px;border:1px solid #263260;border-radius:5px;font-family:Inter,sans-serif">Proyección XY (Z integrado)</span>
+  </div>
+  <div class="rule"></div>
+  <div class="meta">bg #050714 · axes 1px #1f2c61 · sample dots #70ff73 at 3×3 px · chip top-left</div>
+</div>
+</body>
+</html>

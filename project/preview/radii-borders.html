@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="_card.css" />
+<title>Radii &amp; borders</title>
+</head>
+<body>
+<div class="card">
+  <div class="row" style="align-items:flex-end">
+    <div class="col" style="align-items:center;gap:8px">
+      <div style="width:80px;height:40px;background:#050714;border:1px solid #263260;border-radius:5px"></div>
+      <span class="meta">5 · chip</span>
+    </div>
+    <div class="col" style="align-items:center;gap:8px">
+      <div style="width:80px;height:60px;background:rgba(0,0,0,.45);border:1px solid #1f2b58;border-radius:8px"></div>
+      <span class="meta">8 · panel / HUD</span>
+    </div>
+    <div class="col" style="align-items:center;gap:8px">
+      <div style="width:80px;height:80px;background:#050714;border:1px solid #1f2b58;border-radius:12px"></div>
+      <span class="meta">12 · card</span>
+    </div>
+    <div class="col grow" style="gap:6px;margin-left:20px">
+      <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:#9fb0ff"><span style="width:40px;height:1px;background:#101731"></span>faint · #101731</div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:#9fb0ff"><span style="width:40px;height:1px;background:#1b2240"></span>1 · #1b2240</div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:#9fb0ff"><span style="width:40px;height:1px;background:#1f2b58"></span>2 · #1f2b58</div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:#9fb0ff"><span style="width:40px;height:1px;background:#263260"></span>3 · #263260</div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:#9fb0ff"><span style="width:40px;height:1px;background:#25315f"></span>4 · #25315f</div>
+    </div>
+  </div>
+  <div class="rule"></div>
+  <div class="meta">No shadows on DOM · elevation = translucency + 1px border, never drop shadow</div>
+</div>
+</body>
+</html>

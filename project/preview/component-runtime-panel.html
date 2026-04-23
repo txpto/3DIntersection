@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="_card.css" />
+<title>Runtime config panel</title>
+</head>
+<body>
+<div class="card">
+  <div style="background:rgba(0,0,0,.45);border:1px solid #1f2b58;border-radius:8px;padding:10px;font-family:Inter,sans-serif;font-size:12px;color:#d5dcff">
+    <div style="padding-top:2px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <label style="display:inline-flex;align-items:center;gap:6px">
+        Backend:
+        <select style="font-family:var(--font-mono);font-size:11px;background:#0b0f22;color:#c6d2ff;border:1px solid #1f2b58;border-radius:4px;padding:2px 4px">
+          <option>worker</option><option>inline</option>
+        </select>
+      </label>
+      <label style="display:inline-flex;align-items:center;gap:6px">
+        Samples:
+        <input type="number" value="20" style="width:56px;font-family:var(--font-mono);font-size:11px;background:#0b0f22;color:#c6d2ff;border:1px solid #1f2b58;border-radius:4px;padding:2px 4px"/>
+      </label>
+      <button style="font-family:Inter,sans-serif;font-size:11px;background:#0b0f22;color:#d5dcff;border:1px solid #263260;border-radius:5px;padding:3px 10px;cursor:pointer">Aplicar</button>
+    </div>
+    <div style="margin-top:6px;color:#9fb0ff;font-size:11px">Perf: <span style="font-family:var(--font-mono);color:#7dff7f">worker · 20³ · 3.4 ms</span></div>
+  </div>
+  <div class="rule"></div>
+  <div class="meta">Form controls inherit the chip palette · select/input use mono · button = navy border, no fill</div>
+</div>
+</body>
+</html>

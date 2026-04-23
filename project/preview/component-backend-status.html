@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="_card.css" />
+<title>Backend status</title>
+</head>
+<body>
+<div class="card">
+  <div class="row" style="gap:10px;flex-wrap:wrap">
+    <span style="display:inline-flex;align-items:center;gap:8px;font-family:Inter,sans-serif;font-size:12px;color:#d5dcff;background:rgba(0,0,0,.45);border:1px solid #1f2b58;padding:6px 10px;border-radius:6px">
+      <span style="width:8px;height:8px;border-radius:50%;background:#7dff7f;box-shadow:0 0 8px #7dff7f"></span>
+      Backend: <strong>worker</strong>
+    </span>
+    <span style="display:inline-flex;align-items:center;gap:8px;font-family:Inter,sans-serif;font-size:12px;color:#d5dcff;background:rgba(0,0,0,.45);border:1px solid #1f2b58;padding:6px 10px;border-radius:6px">
+      <span style="width:8px;height:8px;border-radius:50%;background:#f08cff;box-shadow:0 0 8px #f08cff"></span>
+      Backend: <strong>fallback-pending</strong>
+    </span>
+    <span style="display:inline-flex;align-items:center;gap:8px;font-family:Inter,sans-serif;font-size:12px;color:#d5dcff;background:rgba(0,0,0,.45);border:1px solid #1f2b58;padding:6px 10px;border-radius:6px">
+      <span style="width:8px;height:8px;border-radius:50%;background:#9fb0ff"></span>
+      Backend: <strong>idle</strong>
+    </span>
+  </div>
+  <div class="rule"></div>
+  <div class="meta">Status dot echoes data-channel color · mint=active, magenta=error, lavender=idle</div>
+</div>
+</body>
+</html>
