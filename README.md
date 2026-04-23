@@ -1,17 +1,29 @@
 # Demo: Intersección 3D (esfera + cubo)
 
-Aplicación web simple con un entorno oscuro tipo “universo” donde:
+Aplicación web 3D con layout 1+3 (vista principal y proyecciones XY/XZ/YZ), ejecutando ya la hoja de ruta por fases hacia una arquitectura profesional desacoplada.
 
-- Puedes arrastrar una **esfera** con el mouse.
-- Puedes mover un **cubo** con teclado (`WASD` + `Q/E`).
-- Se calcula una aproximación de la zona de intersección esfera-cubo y se dibuja en:
-  - Vista `XY`
-  - Vista `XZ`
-  - Vista `YZ`
+## Estado actual (ejecución activa de fases)
+
+- **Fase 1 ejecutada**: base visual oscura, interacción estable con ratón/teclado y HUD de estado.
+- **Fase 2 en ejecución**: métricas operativas (`volumen aprox.`, `Δx`, `Δy`, `Δz`) y proyecciones sincronizadas.
+- **Fase 3 iniciada**: backend geométrico desacoplado y cálculo en `Web Worker` para no bloquear UI.
+
+### Controles
+- Esfera: arrastre con ratón.
+- Cubo (traslación): `W A S D` + `Q/E`.
+- Cubo (rotación): `I J K L U O`.
+
+## Arquitectura implementada en esta iteración
+
+- `main.js`: render, input y orquestación de estado.
+- `src/boolean-backend.js`: interfaz runtime del backend de intersección en worker.
+- `src/intersection-worker.js`: cómputo geométrico desacoplado (gating esfera-OBB + muestreo + métricas).
+
+## Plan por fases
+
+- [`docs/PLAN_FASES_ARQUITECTURA.md`](docs/PLAN_FASES_ARQUITECTURA.md)
 
 ## Ejecutar
-
-Esta demo es estática (HTML + JS). Necesitas levantar un servidor local y abrir la URL en el navegador.
 
 ### Opción A (Python 3)
 
@@ -19,46 +31,12 @@ Esta demo es estática (HTML + JS). Necesitas levantar un servidor local y abrir
 python3 -m http.server 8000
 ```
 
-En Windows normalmente es:
-
-```bat
-py -3 -m http.server 8000
-```
-
-Si tu `python` apunta a Python 2.7 (como en tu caso), `python -m http.server` no funcionará.
-
-### Opción B (Node.js, recomendado en Windows si no tienes Python 3)
+### Opción B (Node.js)
 
 ```bash
 npx serve -l 8000 .
 ```
 
-### Opción C (Python 2.7 legado)
-
-Si solo tienes Python 2.7 disponible, usa:
-
-```bash
-python -m SimpleHTTPServer 8000
-```
-
-> Nota: funciona para esta demo estática, pero Python 2.7 está obsoleto.
-
-### Abrir en navegador
+Abrir en navegador:
 
 - `http://localhost:8000`
-
-## Nota para tu error en Windows
-
-Si ves esto:
-
-- `'python3' is not recognized...`
-- `C:\Python27\python.exe: No module named http`
-
-significa que no tienes Python 3 en PATH y que `python` está resolviendo a Python 2.7.
-
-Soluciones rápidas:
-
-1. Probar `py -3 -m http.server 8000`.
-2. O usar `npx serve -l 8000 .`.
-3. Si solo tienes Python 2.7: `python -m SimpleHTTPServer 8000`.
-4. O instalar Python 3 y marcar “Add Python to PATH”.

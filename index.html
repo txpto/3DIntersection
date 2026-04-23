@@ -52,7 +52,7 @@
         left: 10px;
         font-size: 12px;
         line-height: 1.35;
-        max-width: 420px;
+        max-width: 460px;
         background: rgba(0, 0, 0, 0.45);
         border: 1px solid #1f2b58;
         border-radius: 8px;
@@ -60,6 +60,12 @@
       }
       #hud code {
         color: #c6d2ff;
+      }
+      #metrics {
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px solid #25315f;
+        color: #9fffb0;
       }
       canvas {
         display: block;
@@ -75,7 +81,9 @@
           <strong>Controles</strong><br />
           Arrastra la <code>esfera</code> con el ratón.<br />
           Mueve el <code>cubo</code> con <code>W A S D</code> (plano XZ) y <code>Q/E</code> (Y).<br />
-          Cuando se intersectan, verás la zona de solape en 3 paneles (XY, XZ, YZ).
+          Rota el cubo con <code>I J K L U O</code>.<br />
+          Ejecución activa de fases: interacción + backend geométrico en worker (ver README/plan).<br />
+          <div id="metrics">Intersección: <strong>no</strong></div>
         </div>
       </section>
       <section id="projections">
