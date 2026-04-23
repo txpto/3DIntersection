@@ -1,5 +1,5 @@
-import * as THREE from 'https://unpkg.com/three@0.164.1/build/three.module.js';
-import { OrbitControls } from 'https://unpkg.com/three@0.164.1/examples/jsm/controls/OrbitControls.js';
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 const mainContainer = document.getElementById('main3d');
 const renderer = new THREE.WebGLRenderer({ antialias: true });
