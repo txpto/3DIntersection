@@ -62,5 +62,6 @@ Definir e implementar una arquitectura web robusta con separación clara entre r
 - Sin regresión de robustez en el backend autoritativo.
 
 ## Estado de ejecución (actual)
-- **Ejecutando Fase 1** con mejoras ya aplicadas en UI/HUD y recomputación por cambios.
-- Siguiente hito recomendado: formalizar interfaz de backend e introducir worker.
+- **Fase 1 ejecutada** (UI/HUD e interacción base).
+- **Fase 2 en ejecución** (métricas operativas en runtime).
+- **Fase 3 iniciada** con backend desacoplado y cálculo en worker.

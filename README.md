@@ -1,39 +1,34 @@
 # Demo: Intersección 3D (esfera + cubo)
 
-Aplicación web 3D con layout 1+3 (vista principal y proyecciones XY/XZ/YZ) para iterar hacia una arquitectura profesional de intersección esfera-cubo.
+Aplicación web 3D con layout 1+3 (vista principal y proyecciones XY/XZ/YZ), ejecutando ya la hoja de ruta por fases hacia una arquitectura profesional desacoplada.
 
-## Estado actual
+## Estado actual (ejecución activa de fases)
 
-- Base visual oscura y controles activos:
-  - Esfera con ratón (drag sobre plano).
-  - Cubo con teclado (`WASD` + `Q/E`).
-- Proyecciones 2D de la intersección (muestra por puntos) en paneles XY/XZ/YZ.
-- Detección rápida de intersección esfera-caja para evitar cómputo innecesario.
-- Recomputación con `dirty flag`.
-- HUD con estado de intersección, volumen aproximado y extents (`Δx`, `Δy`, `Δz`).
+- **Fase 1 ejecutada**: base visual oscura, interacción estable con ratón/teclado y HUD de estado.
+- **Fase 2 en ejecución**: métricas operativas (`volumen aprox.`, `Δx`, `Δy`, `Δz`) y proyecciones sincronizadas.
+- **Fase 3 iniciada**: backend geométrico desacoplado y cálculo en `Web Worker` para no bloquear UI.
+
+### Controles
+- Esfera: arrastre con ratón.
+- Cubo (traslación): `W A S D` + `Q/E`.
+- Cubo (rotación): `I J K L U O`.
+
+## Arquitectura implementada en esta iteración
+
+- `main.js`: render, input y orquestación de estado.
+- `src/boolean-backend.js`: interfaz runtime del backend de intersección en worker.
+- `src/intersection-worker.js`: cómputo geométrico desacoplado (gating esfera-OBB + muestreo + métricas).
 
 ## Plan por fases
 
-El plan de investigación/distribución profesional quedó documentado en:
-
 - [`docs/PLAN_FASES_ARQUITECTURA.md`](docs/PLAN_FASES_ARQUITECTURA.md)
 
-Fase actual: **Fase 1 (en progreso)**.
-
 ## Ejecutar
-
-Esta demo es estática (HTML + JS). Levanta un servidor local y abre la URL en el navegador.
 
 ### Opción A (Python 3)
 
 ```bash
 python3 -m http.server 8000
-```
-
-En Windows normalmente es:
-
-```bat
-py -3 -m http.server 8000
 ```
 
 ### Opción B (Node.js)
@@ -42,14 +37,6 @@ py -3 -m http.server 8000
 npx serve -l 8000 .
 ```
 
-### Opción C (Python 2.7 legado)
-
-```bash
-python -m SimpleHTTPServer 8000
-```
-
-> Nota: esta opción es legado; se recomienda Python 3 o Node.js.
-
-### Abrir en navegador
+Abrir en navegador:
 
 - `http://localhost:8000`
