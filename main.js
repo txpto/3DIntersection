@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { SamplingWorkerBackend } from './src/boolean-backend.js';
+import { createIntersectionBackend } from './src/boolean-backend.js';
 
 const mainContainer = document.getElementById('main3d');
 const metricsEl = document.getElementById('metrics');
@@ -28,7 +28,6 @@ const grid = new THREE.GridHelper(20, 20, 0x1f2d6a, 0x101731);
 grid.material.opacity = 0.5;
 grid.material.transparent = true;
 scene.add(grid);
-
 scene.add(new THREE.AxesHelper(3.5));
 
 const sphere = new THREE.Mesh(
@@ -64,10 +63,17 @@ const dragHit = new THREE.Vector3();
 
 const keyState = new Set();
 let dirty = true;
-let backendStatus = 'worker';
 let latestRequestId = 0;
 
-const backend = new SamplingWorkerBackend({ samplesPerAxis: 20 });
+const phaseState = {
+  phase1: 'done',
+  phase2: 'running',
+  phase3: 'running'
+};
+
+const backendFactory = createIntersectionBackend({ preferWorker: true, samplesPerAxis: 20 });
+const backend = backendFactory.backend;
+let backendStatus = backendFactory.mode;
 
 function getInputPayload() {
   return {
@@ -99,7 +105,6 @@ function drawProjection(canvas, positions, axisA, axisB, worldMin = -8, worldMax
   ctx.fillRect(0, 0, w, h);
 
   const toPx = (v) => ((v - worldMin) / (worldMax - worldMin));
-
   ctx.strokeStyle = '#1f2c61';
   ctx.lineWidth = 1;
 
@@ -115,13 +120,13 @@ function drawProjection(canvas, positions, axisA, axisB, worldMin = -8, worldMax
   if (positions.length === 0) return;
 
   const axisToIndex = { x: 0, y: 1, z: 2 };
-  const a = axisToIndex[axisA];
-  const b = axisToIndex[axisB];
+  const ai = axisToIndex[axisA];
+  const bi = axisToIndex[axisB];
 
   ctx.fillStyle = '#70ff73';
   for (let i = 0; i < positions.length; i += 3) {
-    const u = toPx(positions[i + a]) * w;
-    const v = (1 - toPx(positions[i + b])) * h;
+    const u = toPx(positions[i + ai]) * w;
+    const v = (1 - toPx(positions[i + bi])) * h;
     ctx.fillRect(u - 1, v - 1, 3, 3);
   }
 }
@@ -130,7 +135,6 @@ function syncOverlay(positions) {
   drawProjection(panels.xy, positions, 'x', 'y');
   drawProjection(panels.xz, positions, 'x', 'z');
   drawProjection(panels.yz, positions, 'y', 'z');
-
   overlapPoints.geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
   overlapPoints.geometry.computeBoundingSphere();
 }
@@ -141,7 +145,8 @@ function updateMetricsOverlay(metrics) {
   if (!metrics.intersects) {
     metricsEl.innerHTML = [
       'Intersección: <strong>no</strong>',
-      `Backend: <strong>${backendStatus}</strong>`
+      `Backend: <strong>${backendStatus}</strong>`,
+      `Fases: F1=${phaseState.phase1} · F2=${phaseState.phase2} · F3=${phaseState.phase3}`
     ].join('<br />');
     return;
   }
@@ -150,7 +155,9 @@ function updateMetricsOverlay(metrics) {
     'Intersección: <strong>sí</strong>',
     `Backend: <strong>${backendStatus}</strong>`,
     `Volumen aprox.: <strong>${metrics.volumeApprox.toFixed(4)}</strong>`,
-    `Δx=${metrics.size.x.toFixed(3)} · Δy=${metrics.size.y.toFixed(3)} · Δz=${metrics.size.z.toFixed(3)}`
+    `Área aprox.: <strong>${metrics.areaApprox.toFixed(4)}</strong>`,
+    `Δx=${metrics.size.x.toFixed(3)} · Δy=${metrics.size.y.toFixed(3)} · Δz=${metrics.size.z.toFixed(3)}`,
+    `Fases: F1=${phaseState.phase1} · F2=${phaseState.phase2} · F3=${phaseState.phase3}`
   ].join('<br />');
 }
 
@@ -159,7 +166,6 @@ renderer.domElement.addEventListener('pointerdown', (ev) => {
   const rect = renderer.domElement.getBoundingClientRect();
   pointer.x = ((ev.clientX - rect.left) / rect.width) * 2 - 1;
   pointer.y = -((ev.clientY - rect.top) / rect.height) * 2 + 1;
-
   raycaster.setFromCamera(pointer, camera);
   if (raycaster.intersectObject(sphere).length > 0) {
     draggingSphere = true;
@@ -220,7 +226,7 @@ function updateCubeMovement(delta) {
   }
 }
 
-async function recomputeIfNeeded() {
+async function recomputeIntersectionIfNeeded() {
   if (!dirty) return;
 
   const request = backend.intersect(getInputPayload());
@@ -233,29 +239,13 @@ async function recomputeIfNeeded() {
     const positions = result.positions instanceof Float32Array ? result.positions : new Float32Array(result.positions);
     syncOverlay(positions);
     updateMetricsOverlay(result.metrics);
+    phaseState.phase2 = 'running';
+    phaseState.phase3 = backendStatus.startsWith('worker') ? 'running' : 'started-inline';
   } catch {
-    backendStatus = 'fallback-pending';
+    backendStatus = 'inline-error';
   } finally {
     if (request.id === latestRequestId) dirty = false;
   }
-}
-
-function recomputeIfNeeded() {
-  if (!dirty) return;
-
-  if (!sphereIntersectsAabb()) {
-    syncOverlay([]);
-    lastMetrics = null;
-    updateMetricsOverlay(null, false);
-    dirty = false;
-    return;
-  }
-
-  const points = sampleIntersectionPoints(13);
-  syncOverlay(points);
-  lastMetrics = computeMetrics(points);
-  updateMetricsOverlay(lastMetrics, points.length > 0);
-  dirty = false;
 }
 
 function onResize() {
@@ -275,8 +265,7 @@ const clock = new THREE.Clock();
 function animate() {
   const dt = clock.getDelta();
   updateCubeMovement(dt);
-  void recomputeIfNeeded();
-
+  void recomputeIntersectionIfNeeded();
   controls.update();
   renderer.render(scene, camera);
   requestAnimationFrame(animate);

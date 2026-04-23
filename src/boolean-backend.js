@@ -1,3 +1,26 @@
+import { intersectSampled } from './intersection-core.js';
+
+export class SamplingInlineBackend {
+  constructor({ samplesPerAxis = 20 } = {}) {
+    this.samplesPerAxis = samplesPerAxis;
+    this.requestId = 0;
+  }
+
+  intersect(input) {
+    this.requestId += 1;
+    const id = this.requestId;
+    const payload = intersectSampled({
+      sphere: input.sphere,
+      cube: input.cube,
+      samplesPerAxis: this.samplesPerAxis
+    });
+
+    return { id, promise: Promise.resolve(payload) };
+  }
+
+  dispose() {}
+}
+
 export class SamplingWorkerBackend {
   constructor({ workerUrl = './src/intersection-worker.js', samplesPerAxis = 20 } = {}) {
     this.samplesPerAxis = samplesPerAxis;
@@ -47,4 +70,18 @@ export class SamplingWorkerBackend {
     this.worker.terminate();
     this.pending.clear();
   }
+}
+
+export function createIntersectionBackend(options = {}) {
+  const { preferWorker = true, samplesPerAxis = 20 } = options;
+
+  if (preferWorker && typeof Worker !== 'undefined') {
+    try {
+      return { backend: new SamplingWorkerBackend({ samplesPerAxis }), mode: 'worker' };
+    } catch {
+      return { backend: new SamplingInlineBackend({ samplesPerAxis }), mode: 'inline-fallback' };
+    }
+  }
+
+  return { backend: new SamplingInlineBackend({ samplesPerAxis }), mode: 'inline' };
 }
