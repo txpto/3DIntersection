@@ -84,6 +84,20 @@
           Rota el cubo con <code>I J K L U O</code>.<br />
           Ejecución activa por fases: F1/F2/F3 en marcha y F4 iniciada (ver README/plan).<br />
           <div id="metrics">Intersección: <strong>no</strong></div>
+          <div style="margin-top:8px;padding-top:8px;border-top:1px solid #25315f;">
+            <label>Backend:
+              <select id="backendMode">
+                <option value="worker" selected>worker</option>
+                <option value="inline">inline</option>
+              </select>
+            </label>
+            <label style="margin-left:8px;">Samples:
+              <input id="samplesPerAxis" type="number" min="6" max="64" step="1" value="20" style="width:56px;" />
+            </label>
+            <button id="applyConfig" type="button">Aplicar</button>
+          </div>
+          <div id="perf" style="margin-top:6px;color:#9fb0ff;">Perf: --</div>
+
         </div>
       </section>
       <section id="projections">

@@ -4,6 +4,10 @@ import { createIntersectionBackend } from './src/boolean-backend.js';
 
 const mainContainer = document.getElementById('main3d');
 const metricsEl = document.getElementById('metrics');
+const perfEl = document.getElementById('perf');
+const backendModeEl = document.getElementById('backendMode');
+const samplesEl = document.getElementById('samplesPerAxis');
+const applyConfigEl = document.getElementById('applyConfig');
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -64,12 +68,56 @@ const dragHit = new THREE.Vector3();
 const keyState = new Set();
 let dirty = true;
 let latestRequestId = 0;
+let backendEpoch = 0;
+let lastComputeMs = 0;
 
 const phaseState = {
   phase1: 'done',
   phase2: 'running',
-  phase3: 'running'
+  phase3: 'running',
+  phase4: 'running',
+  phase5: 'started'
 };
+
+function parseSamples() {
+  const val = Number(samplesEl?.value ?? 20);
+  return Math.max(6, Math.min(64, Number.isFinite(val) ? Math.floor(val) : 20));
+}
+
+function createRuntimeBackend() {
+  const selectedMode = backendModeEl?.value === 'inline' ? 'inline' : 'worker';
+  const backendFactory = createIntersectionBackend({
+    preferWorker: selectedMode === 'worker',
+    samplesPerAxis: parseSamples()
+  });
+
+  return { backend: backendFactory.backend, mode: backendFactory.mode };
+}
+
+let runtime = createRuntimeBackend();
+let backendStatus = runtime.mode;
+
+applyConfigEl?.addEventListener('click', () => {
+  runtime.backend.dispose();
+  runtime = createRuntimeBackend();
+  backendStatus = runtime.mode;
+  backendEpoch += 1;
+  dirty = true;
+});
+
+function getInputPayload() {
+  return {
+    sphere: {
+      position: { x: sphere.position.x, y: sphere.position.y, z: sphere.position.z },
+      radius: 1.4
+    },
+    cube: {
+      position: { x: cube.position.x, y: cube.position.y, z: cube.position.z },
+      rotation: { x: cube.quaternion.x, y: cube.quaternion.y, z: cube.quaternion.z, w: cube.quaternion.w },
+      halfSize: { x: 1.5, y: 1.5, z: 1.5 }
+    }
+  };
+}
 
 const backendFactory = createIntersectionBackend({ preferWorker: true, samplesPerAxis: 20 });
 const backend = backendFactory.backend;
@@ -139,26 +187,32 @@ function syncOverlay(positions) {
   overlapPoints.geometry.computeBoundingSphere();
 }
 
-function updateMetricsOverlay(metrics) {
+function updateHud(metrics) {
   if (!metricsEl) return;
+  const phases = `F1=${phaseState.phase1} · F2=${phaseState.phase2} · F3=${phaseState.phase3} · F4=${phaseState.phase4} · F5=${phaseState.phase5}`;
 
   if (!metrics.intersects) {
     metricsEl.innerHTML = [
       'Intersección: <strong>no</strong>',
       `Backend: <strong>${backendStatus}</strong>`,
-      `Fases: F1=${phaseState.phase1} · F2=${phaseState.phase2} · F3=${phaseState.phase3}`
+      `Samples: <strong>${parseSamples()}</strong>`,
+      phases
     ].join('<br />');
-    return;
+  } else {
+    metricsEl.innerHTML = [
+      'Intersección: <strong>sí</strong>',
+      `Backend: <strong>${backendStatus}</strong>`,
+      `Samples: <strong>${parseSamples()}</strong>`,
+      `Volumen aprox.: <strong>${metrics.volumeApprox.toFixed(4)}</strong>`,
+      `Área aprox.: <strong>${metrics.areaApprox.toFixed(4)}</strong>`,
+      `Δx=${metrics.size.x.toFixed(3)} · Δy=${metrics.size.y.toFixed(3)} · Δz=${metrics.size.z.toFixed(3)}`,
+      phases
+    ].join('<br />');
   }
 
-  metricsEl.innerHTML = [
-    'Intersección: <strong>sí</strong>',
-    `Backend: <strong>${backendStatus}</strong>`,
-    `Volumen aprox.: <strong>${metrics.volumeApprox.toFixed(4)}</strong>`,
-    `Área aprox.: <strong>${metrics.areaApprox.toFixed(4)}</strong>`,
-    `Δx=${metrics.size.x.toFixed(3)} · Δy=${metrics.size.y.toFixed(3)} · Δz=${metrics.size.z.toFixed(3)}`,
-    `Fases: F1=${phaseState.phase1} · F2=${phaseState.phase2} · F3=${phaseState.phase3}`
-  ].join('<br />');
+  if (perfEl) {
+    perfEl.textContent = `Perf: compute=${lastComputeMs.toFixed(2)}ms · mode=${backendStatus}`;
+  }
 }
 
 let draggingSphere = false;
@@ -229,22 +283,24 @@ function updateCubeMovement(delta) {
 async function recomputeIntersectionIfNeeded() {
   if (!dirty) return;
 
-  const request = backend.intersect(getInputPayload());
+  const localEpoch = backendEpoch;
+  const request = runtime.backend.intersect(getInputPayload());
   latestRequestId = request.id;
 
   try {
+    const t0 = performance.now();
     const result = await request.promise;
-    if (request.id !== latestRequestId) return;
+    lastComputeMs = performance.now() - t0;
+
+    if (localEpoch !== backendEpoch || request.id !== latestRequestId) return;
 
     const positions = result.positions instanceof Float32Array ? result.positions : new Float32Array(result.positions);
     syncOverlay(positions);
-    updateMetricsOverlay(result.metrics);
-    phaseState.phase2 = 'running';
-    phaseState.phase3 = backendStatus.startsWith('worker') ? 'running' : 'started-inline';
+    updateHud(result.metrics);
   } catch {
-    backendStatus = 'inline-error';
+    backendStatus = 'runtime-error';
   } finally {
-    if (request.id === latestRequestId) dirty = false;
+    if (localEpoch === backendEpoch && request.id === latestRequestId) dirty = false;
   }
 }
 
@@ -273,5 +329,5 @@ function animate() {
 animate();
 
 window.addEventListener('beforeunload', () => {
-  backend.dispose();
+  runtime.backend.dispose();
 });

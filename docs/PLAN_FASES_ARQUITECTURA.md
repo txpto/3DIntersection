@@ -13,10 +13,7 @@ Implementar una arquitectura web robusta para intersección 3D con separación e
 - Controles de traslación y rotación del cubo + drag de esfera.
 
 ## Fase 2 — MVP geométrico operativo (en ejecución)
-- Intersección por muestreo con métricas aproximadas:
-  - volumen aproximado,
-  - área aproximada,
-  - extents por eje.
+- Intersección por muestreo con métricas aproximadas.
 - HUD de estado en tiempo real.
 
 ## Fase 3 — Endurecimiento arquitectónico (en ejecución)
@@ -27,15 +24,16 @@ Implementar una arquitectura web robusta para intersección 3D con separación e
 ## Fase 4 — Calidad métrica y validación (en ejecución)
 - Shared core geométrico (`intersection-core`) reutilizado entre worker e inline.
 - Tests automáticos (`node:test`) para regresión geométrica base.
-- Script de validación de drift por resolución para cuantificar estabilidad del muestreo.
+- Script de validación de drift por resolución.
 
-## Fase 5 — Optimización avanzada y backend robusto (pendiente)
-- Sustituir backend de muestreo por CSG robusto en WASM (objetivo: Manifold).
-- Ruta opcional SDF/WebGPU para previsualización avanzada.
+## Fase 5 — Optimización avanzada y backend robusto (iniciada)
+- Selector runtime de backend (`worker`/`inline`) y resolución de muestreo.
+- Telemetría de latencia de cómputo en HUD para tuning en vivo.
+- Próximo paso: backend CSG robusto en WASM (Manifold) detrás del mismo contrato.
 
 ## Estado de ejecución actual
 - F1: completada.
 - F2: en ejecución.
 - F3: en ejecución.
 - F4: en ejecución.
-- F5: pendiente.
+- F5: iniciada.
