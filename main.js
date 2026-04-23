@@ -240,6 +240,24 @@ async function recomputeIfNeeded() {
   }
 }
 
+function recomputeIfNeeded() {
+  if (!dirty) return;
+
+  if (!sphereIntersectsAabb()) {
+    syncOverlay([]);
+    lastMetrics = null;
+    updateMetricsOverlay(null, false);
+    dirty = false;
+    return;
+  }
+
+  const points = sampleIntersectionPoints(13);
+  syncOverlay(points);
+  lastMetrics = computeMetrics(points);
+  updateMetricsOverlay(lastMetrics, points.length > 0);
+  dirty = false;
+}
+
 function onResize() {
   renderer.setSize(mainContainer.clientWidth, mainContainer.clientHeight);
   camera.aspect = mainContainer.clientWidth / mainContainer.clientHeight;
