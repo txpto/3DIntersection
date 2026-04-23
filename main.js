@@ -95,33 +95,15 @@ function createRuntimeBackend() {
 }
 
 let runtime = createRuntimeBackend();
-let backendStatus = runtime.mode;
+const appState = { backendStatus: runtime.mode };
 
 applyConfigEl?.addEventListener('click', () => {
   runtime.backend.dispose();
   runtime = createRuntimeBackend();
-  backendStatus = runtime.mode;
+  appState.backendStatus = runtime.mode;
   backendEpoch += 1;
   dirty = true;
 });
-
-function getInputPayload() {
-  return {
-    sphere: {
-      position: { x: sphere.position.x, y: sphere.position.y, z: sphere.position.z },
-      radius: 1.4
-    },
-    cube: {
-      position: { x: cube.position.x, y: cube.position.y, z: cube.position.z },
-      rotation: { x: cube.quaternion.x, y: cube.quaternion.y, z: cube.quaternion.z, w: cube.quaternion.w },
-      halfSize: { x: 1.5, y: 1.5, z: 1.5 }
-    }
-  };
-}
-
-const backendFactory = createIntersectionBackend({ preferWorker: true, samplesPerAxis: 20 });
-const backend = backendFactory.backend;
-let backendStatus = backendFactory.mode;
 
 function getInputPayload() {
   return {
@@ -194,14 +176,14 @@ function updateHud(metrics) {
   if (!metrics.intersects) {
     metricsEl.innerHTML = [
       'Intersección: <strong>no</strong>',
-      `Backend: <strong>${backendStatus}</strong>`,
+      `Backend: <strong>${appState.backendStatus}</strong>`,
       `Samples: <strong>${parseSamples()}</strong>`,
       phases
     ].join('<br />');
   } else {
     metricsEl.innerHTML = [
       'Intersección: <strong>sí</strong>',
-      `Backend: <strong>${backendStatus}</strong>`,
+      `Backend: <strong>${appState.backendStatus}</strong>`,
       `Samples: <strong>${parseSamples()}</strong>`,
       `Volumen aprox.: <strong>${metrics.volumeApprox.toFixed(4)}</strong>`,
       `Área aprox.: <strong>${metrics.areaApprox.toFixed(4)}</strong>`,
@@ -211,7 +193,7 @@ function updateHud(metrics) {
   }
 
   if (perfEl) {
-    perfEl.textContent = `Perf: compute=${lastComputeMs.toFixed(2)}ms · mode=${backendStatus}`;
+    perfEl.textContent = `Perf: compute=${lastComputeMs.toFixed(2)}ms · mode=${appState.backendStatus}`;
   }
 }
 
@@ -298,7 +280,7 @@ async function recomputeIntersectionIfNeeded() {
     syncOverlay(positions);
     updateHud(result.metrics);
   } catch {
-    backendStatus = 'runtime-error';
+    appState.backendStatus = 'runtime-error';
   } finally {
     if (localEpoch === backendEpoch && request.id === latestRequestId) dirty = false;
   }
