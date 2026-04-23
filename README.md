@@ -30,7 +30,7 @@ python3 -m http.server 8000
 o
 
 ```bash
-npx serve -l 8000 .
+python3 -m http.server 8000
 ```
 
 Abrir: `http://localhost:8000`
