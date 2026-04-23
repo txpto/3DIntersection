@@ -4,69 +4,116 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Intersección 3D: Esfera + Cubo</title>
+    <link rel="icon" href="./favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./colors_and_type.css" />
     <style>
-      :root {
-        color-scheme: dark;
-      }
-      body {
-        margin: 0;
-        font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-        background: #02030a;
-        color: #d5dcff;
-      }
+      html, body { height: 100%; margin: 0; }
+
       #app {
         display: grid;
         grid-template-columns: 2fr 1fr;
         height: 100vh;
+        background: var(--bg-void);
+        color: var(--fg-1);
+        font-family: var(--font-sans);
       }
+
       #main3d {
         position: relative;
-        border-right: 1px solid #1b2240;
+        border-right: 1px solid var(--border-1);
       }
+
       #projections {
         display: grid;
         grid-template-rows: repeat(3, 1fr);
       }
+
       .panel {
-        border-bottom: 1px solid #1b2240;
+        border-bottom: 1px solid var(--border-1);
         position: relative;
+        background: var(--bg-panel);
       }
+
       .panel:last-child {
         border-bottom: none;
       }
+
+      /* Position override — .ds-label already handles the chip visual */
       .label {
         position: absolute;
-        top: 8px;
-        left: 8px;
-        font-size: 12px;
-        letter-spacing: 0.02em;
-        color: #9fb0ff;
-        background: rgba(2, 4, 10, 0.7);
-        padding: 3px 6px;
-        border: 1px solid #263260;
-        border-radius: 5px;
+        top: var(--space-3);
+        left: var(--space-3);
       }
+
       #hud {
         position: absolute;
-        bottom: 10px;
-        left: 10px;
-        font-size: 12px;
-        line-height: 1.35;
+        bottom: var(--space-4);
+        left: var(--space-4);
         max-width: 460px;
-        background: rgba(0, 0, 0, 0.45);
-        border: 1px solid #1f2b58;
-        border-radius: 8px;
-        padding: 10px;
       }
+
       #hud code {
-        color: #c6d2ff;
+        font-family: var(--font-mono);
+        color: var(--fg-2);
+        background: #0b0f22;
+        padding: 1px 6px;
+        border-radius: 4px;
+        border: 1px solid var(--border-2);
+        font-size: 0.92em;
       }
-      #metrics {
-        margin-top: 8px;
-        padding-top: 8px;
-        border-top: 1px solid #25315f;
-        color: #9fffb0;
+
+      .runtime-panel {
+        margin-top: var(--space-3);
+        padding-top: var(--space-3);
+        border-top: 1px solid var(--border-4);
+        display: flex;
+        gap: var(--space-4);
+        align-items: center;
+        flex-wrap: wrap;
+        font-size: 11px;
       }
+
+      .runtime-panel label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      #backendMode,
+      #samplesPerAxis {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        background: #0b0f22;
+        color: var(--fg-2);
+        border: 1px solid var(--border-2);
+        border-radius: 4px;
+        padding: 2px 4px;
+      }
+
+      #samplesPerAxis { width: 56px; }
+
+      #applyConfig {
+        font-family: var(--font-sans);
+        font-size: 11px;
+        background: #0b0f22;
+        color: var(--fg-1);
+        border: 1px solid var(--border-3);
+        border-radius: var(--radius-chip);
+        padding: 3px 10px;
+        cursor: pointer;
+      }
+
+      #applyConfig:hover { opacity: 0.85; }
+
+      #perf {
+        margin-top: 6px;
+        color: var(--fg-3);
+        font-size: 11px;
+        font-family: var(--font-mono);
+      }
+
       canvas {
         display: block;
         width: 100%;
@@ -77,33 +124,41 @@
   <body>
     <div id="app">
       <section id="main3d">
-        <div id="hud">
+        <div id="hud" class="ds-hud">
           <strong>Controles</strong><br />
           Arrastra la <code>esfera</code> con el ratón.<br />
           Mueve el <code>cubo</code> con <code>W A S D</code> (plano XZ) y <code>Q/E</code> (Y).<br />
           Rota el cubo con <code>I J K L U O</code>.<br />
-          Ejecución activa por fases: F1/F2/F3 en marcha y F4 iniciada (ver README/plan).<br />
-          <div id="metrics">Intersección: <strong>no</strong></div>
-          <div style="margin-top:8px;padding-top:8px;border-top:1px solid #25315f;">
+          Ejecución activa por fases: F1/F2/F3 en marcha y F4 iniciada.
+          <div id="metrics" class="ds-metrics">Intersección: <strong>no</strong></div>
+          <div class="runtime-panel">
             <label>Backend:
               <select id="backendMode">
                 <option value="worker" selected>worker</option>
                 <option value="inline">inline</option>
               </select>
             </label>
-            <label style="margin-left:8px;">Samples:
-              <input id="samplesPerAxis" type="number" min="6" max="64" step="1" value="20" style="width:56px;" />
+            <label>Samples:
+              <input id="samplesPerAxis" type="number" min="6" max="64" step="1" value="20" />
             </label>
             <button id="applyConfig" type="button">Aplicar</button>
           </div>
-          <div id="perf" style="margin-top:6px;color:#9fb0ff;">Perf: --</div>
-
+          <div id="perf">Perf: --</div>
         </div>
       </section>
       <section id="projections">
-        <div class="panel"><span class="label">Proyección XY (Z integrado)</span><canvas id="xy"></canvas></div>
-        <div class="panel"><span class="label">Proyección XZ (Y integrado)</span><canvas id="xz"></canvas></div>
-        <div class="panel"><span class="label">Proyección YZ (X integrado)</span><canvas id="yz"></canvas></div>
+        <div class="panel">
+          <span class="label ds-label">Proyección XY (Z integrado)</span>
+          <canvas id="xy"></canvas>
+        </div>
+        <div class="panel">
+          <span class="label ds-label">Proyección XZ (Y integrado)</span>
+          <canvas id="xz"></canvas>
+        </div>
+        <div class="panel">
+          <span class="label ds-label">Proyección YZ (X integrado)</span>
+          <canvas id="yz"></canvas>
+        </div>
       </section>
     </div>
 

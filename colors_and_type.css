@@ -1,0 +1,168 @@
+/* ==========================================================================
+   Intersección 3D — Design tokens
+   Extracted from source: index.html + main.js
+   ========================================================================== */
+
+:root {
+  color-scheme: dark;
+
+  /* --- Base palette (deep-space navy) --- */
+  --bg-void:       #02030a;   /* body background, deepest */
+  --bg-scene:      #03040d;   /* three.js scene clear color */
+  --bg-panel:      #050714;   /* 2D projection canvas fill */
+  --bg-overlay:    rgba(0, 0, 0, 0.45);   /* HUD glass */
+  --bg-label:      rgba(2, 4, 10, 0.7);   /* panel label chip */
+
+  /* --- Borders / dividers (navy scale) --- */
+  --border-faint:  #101731;   /* faintest grid line */
+  --border-1:      #1b2240;   /* default divider */
+  --border-2:      #1f2b58;   /* HUD frame */
+  --border-3:      #263260;   /* chip outline */
+  --border-4:      #25315f;   /* metrics rule */
+  --border-grid:   #1f2d6a;   /* ground grid primary */
+
+  /* --- Foreground (lavender-tinted white) --- */
+  --fg-1:          #d5dcff;   /* body text */
+  --fg-2:          #c6d2ff;   /* code / secondary text */
+  --fg-3:          #9fb0ff;   /* labels, axis names */
+  --fg-dim:        #8290d2;   /* ambient-light tone, muted */
+
+  /* --- Accent / data colors --- */
+  --accent-sphere: #2ac0ff;   /* cyan — sphere primitive */
+  --accent-cube:   #f08cff;   /* magenta — cube primitive */
+  --accent-hit:    #7dff7f;   /* mint — intersection / success */
+  --accent-hit-2:  #70ff73;   /* mint (projection dots) */
+  --accent-light:  #9caeff;   /* key-light tone */
+
+  /* --- Semantic --- */
+  --color-text:           var(--fg-1);
+  --color-text-muted:     var(--fg-3);
+  --color-code:           var(--fg-2);
+  --color-success:        var(--accent-hit);
+  --color-bg:             var(--bg-void);
+  --color-bg-elevated:    var(--bg-overlay);
+  --color-border:         var(--border-1);
+  --color-border-strong:  var(--border-2);
+
+  /* --- Typography --- */
+  --font-sans:  Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:  'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --fs-hud:      12px;   /* HUD / labels (dense data) */
+  --fs-body:     14px;
+  --fs-metric:   16px;
+  --fs-title:    20px;
+  --fs-display:  28px;
+
+  --lh-tight:    1.2;
+  --lh-hud:      1.35;
+  --lh-body:     1.5;
+
+  --ls-label:    0.02em;   /* axis labels letter-spacing */
+  --ls-caps:     0.08em;   /* all-caps headings */
+  --fw-regular:  400;
+  --fw-medium:   500;
+  --fw-bold:     700;
+
+  /* --- Spacing (tight, technical density) --- */
+  --space-1:  3px;   /* chip padding y */
+  --space-2:  6px;   /* chip padding x */
+  --space-3:  8px;   /* label inset, metrics gap */
+  --space-4:  10px;  /* HUD padding, HUD inset */
+  --space-5:  16px;
+  --space-6:  24px;
+
+  /* --- Radii --- */
+  --radius-chip:   5px;   /* axis labels */
+  --radius-panel:  8px;   /* HUD */
+  --radius-card:   12px;
+
+  /* --- Shadows / glows --- */
+  --glow-hit:     0 0 12px rgba(125, 255, 127, 0.45);
+  --glow-sphere:  0 0 16px rgba(42, 192, 255, 0.35);
+  --glow-cube:    0 0 16px rgba(240, 140, 255, 0.30);
+  --shadow-hud:   0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* ==========================================================================
+   Semantic element styles
+   ========================================================================== */
+
+body {
+  margin: 0;
+  background: var(--bg-void);
+  color: var(--fg-1);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+}
+
+h1, .h1 {
+  font-size: var(--fs-display);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+  color: var(--fg-1);
+  margin: 0;
+}
+
+h2, .h2 {
+  font-size: var(--fs-title);
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-tight);
+  color: var(--fg-1);
+  margin: 0;
+}
+
+h3, .h3 {
+  font-size: var(--fs-body);
+  font-weight: var(--fw-medium);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-caps);
+  color: var(--fg-3);
+  margin: 0;
+}
+
+p {
+  color: var(--fg-1);
+  margin: 0 0 var(--space-4) 0;
+}
+
+code, .code {
+  font-family: var(--font-mono);
+  color: var(--fg-2);
+  font-size: 0.9em;
+}
+
+strong { font-weight: var(--fw-bold); color: var(--fg-1); }
+
+/* Axis / panel chip label (matches .label in source) */
+.ds-label {
+  font-size: var(--fs-hud);
+  letter-spacing: var(--ls-label);
+  color: var(--fg-3);
+  background: var(--bg-label);
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--border-3);
+  border-radius: var(--radius-chip);
+  display: inline-block;
+}
+
+/* HUD glass panel (matches #hud) */
+.ds-hud {
+  font-size: var(--fs-hud);
+  line-height: var(--lh-hud);
+  background: var(--bg-overlay);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-panel);
+  padding: var(--space-4);
+  color: var(--fg-1);
+  backdrop-filter: blur(2px);
+}
+
+/* Metrics block (matches #metrics, green-leaning) */
+.ds-metrics {
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-4);
+  color: var(--accent-hit);
+}
