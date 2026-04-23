@@ -1,64 +1,45 @@
 # Demo: Intersección 3D (esfera + cubo)
 
-Aplicación web simple con un entorno oscuro tipo “universo” donde:
+Aplicación web 3D con ejecución por fases activa y arquitectura desacoplada para evolucionar hacia un backend geométrico robusto.
 
-- Puedes arrastrar una **esfera** con el mouse.
-- Puedes mover un **cubo** con teclado (`WASD` + `Q/E`).
-- Se calcula una aproximación de la zona de intersección esfera-cubo y se dibuja en:
-  - Vista `XY`
-  - Vista `XZ`
-  - Vista `YZ`
+## Progreso por fases
+- **Fase 1 (completada):** UI 1+3 + interacción completa (ratón/teclado).
+- **Fase 2 (en ejecución):** métricas aproximadas en runtime (volumen/área/extents).
+- **Fase 3 (en ejecución):** backend de intersección en Web Worker + deduplicación de resultados.
+- **Fase 4 (en ejecución):** validación automática del core geométrico (tests + drift).
+- **Fase 5 (iniciada):** tuning runtime (selector backend, samples, telemetría de cómputo).
+
+Plan formal: [`docs/PLAN_FASES_ARQUITECTURA.md`](docs/PLAN_FASES_ARQUITECTURA.md)
+
+## Controles
+- Esfera: arrastre con ratón.
+- Cubo traslación: `W A S D` + `Q/E`.
+- Cubo rotación: `I J K L U O`.
+- Panel runtime: cambiar backend (`worker`/`inline`) y `samples per axis`, luego pulsar **Aplicar**.
+
+## Arquitectura implementada
+- `main.js`: render/input, control de fases, configuración runtime y telemetría.
+- `src/boolean-backend.js`: factoría de backend (`worker` o `inline fallback`).
+- `src/intersection-core.js`: núcleo geométrico común.
+- `src/intersection-worker.js`: ejecución asíncrona del cálculo.
+- `tests/intersection-core.test.mjs`: regresión geométrica base.
+- `scripts/phase4-validation.mjs`: validación de estabilidad por resolución.
 
 ## Ejecutar
-
-Esta demo es estática (HTML + JS). Necesitas levantar un servidor local y abrir la URL en el navegador.
-
-### Opción A (Python 3)
-
 ```bash
 python3 -m http.server 8000
 ```
 
-En Windows normalmente es:
-
-```bat
-py -3 -m http.server 8000
-```
-
-Si tu `python` apunta a Python 2.7 (como en tu caso), `python -m http.server` no funcionará.
-
-### Opción B (Node.js, recomendado en Windows si no tienes Python 3)
+o
 
 ```bash
 npx serve -l 8000 .
 ```
 
-### Opción C (Python 2.7 legado)
+Abrir: `http://localhost:8000`
 
-Si solo tienes Python 2.7 disponible, usa:
-
+## Validación (Fase 4)
 ```bash
-python -m SimpleHTTPServer 8000
+npm test
+npm run validate:sampling
 ```
-
-> Nota: funciona para esta demo estática, pero Python 2.7 está obsoleto.
-
-### Abrir en navegador
-
-- `http://localhost:8000`
-
-## Nota para tu error en Windows
-
-Si ves esto:
-
-- `'python3' is not recognized...`
-- `C:\Python27\python.exe: No module named http`
-
-significa que no tienes Python 3 en PATH y que `python` está resolviendo a Python 2.7.
-
-Soluciones rápidas:
-
-1. Probar `py -3 -m http.server 8000`.
-2. O usar `npx serve -l 8000 .`.
-3. Si solo tienes Python 2.7: `python -m SimpleHTTPServer 8000`.
-4. O instalar Python 3 y marcar “Add Python to PATH”.
